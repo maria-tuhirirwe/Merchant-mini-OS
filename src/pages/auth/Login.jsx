@@ -36,7 +36,7 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <Card className="!rounded-2xl !p-6 shadow-card-md">
+      <Card className="!rounded-2xl !p-6 !bg-white/70 !backdrop-blur-xl !border-white/60 shadow-card-md">
         <h2 className="text-lg font-bold text-navy-900 mb-1">Welcome back</h2>
         <p className="text-sm text-navy-400 mb-6">Sign in to your account</p>
 
@@ -104,7 +104,7 @@ export default function Login() {
         </p>
 
         {/* Demo hint */}
-        <div className="mt-4 p-3 bg-navy-50 rounded-xl text-xs text-navy-400 text-center">
+        <div className="mt-4 p-3 bg-white/40 border border-white/60 rounded-xl text-xs text-navy-400 text-center">
           Demo: any email + password (6+ chars)
         </div>
       </Card>

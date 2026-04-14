@@ -103,7 +103,7 @@ export default function LoanDetail() {
       </div>
 
       {/* Main info card */}
-      <div className="bg-white rounded-2xl border border-navy-100 shadow-card p-5 mb-4">
+      <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 shadow-card p-5 mb-4">
         {/* Amount + status */}
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -179,7 +179,7 @@ export default function LoanDetail() {
         </h2>
 
         {loan.payments.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-navy-100 p-6 text-center">
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 p-6 text-center">
             <p className="text-navy-400 text-sm">No payments recorded yet.</p>
           </div>
         ) : (
@@ -187,7 +187,7 @@ export default function LoanDetail() {
             {[...loan.payments].reverse().map(pay => (
               <div
                 key={pay.id}
-                className="bg-white rounded-xl border border-navy-100 px-4 py-3 flex items-center justify-between gap-3"
+                className="bg-white/70 backdrop-blur-md rounded-xl border border-white/60 shadow-card px-4 py-3 flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div className={clsx(
@@ -222,7 +222,7 @@ export default function LoanDetail() {
         title="Record Payment"
       >
         <form onSubmit={handlePaymentSubmit} className="flex flex-col gap-4">
-          <div className="text-xs text-navy-500 bg-navy-50 rounded-xl px-4 py-3">
+          <div className="text-xs text-navy-500 bg-white/60 backdrop-blur-sm border border-white/60 rounded-xl px-4 py-3">
             Balance remaining: <span className="font-bold text-navy-800">{formatCurrency(balance)}</span>
           </div>
 

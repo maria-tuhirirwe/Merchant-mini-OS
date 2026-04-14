@@ -17,15 +17,15 @@ export default function Modal({ isOpen, onClose, title, children, footer, classN
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-navy-900/40 backdrop-blur-md"
         onClick={onClose}
       />
       {/* Dialog */}
       <div className={clsx(
-        'relative bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto',
+        'relative bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/60 w-full max-w-md max-h-[90vh] overflow-y-auto',
         className,
       )}>
-        <div className="flex items-center justify-between p-5 border-b border-navy-100">
+        <div className="flex items-center justify-between p-5 border-b border-white/60">
           <h2 className="text-base font-semibold text-navy-900">{title}</h2>
           <button
             onClick={onClose}

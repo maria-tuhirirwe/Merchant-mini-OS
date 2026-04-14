@@ -40,7 +40,7 @@ export default function Signup() {
 
   return (
     <AuthLayout>
-      <Card className="!rounded-2xl !p-6 shadow-card-md">
+      <Card className="!rounded-2xl !p-6 !bg-white/70 !backdrop-blur-xl !border-white/60 shadow-card-md">
         <h2 className="text-lg font-bold text-navy-900 mb-1">Create account</h2>
         <p className="text-sm text-navy-400 mb-6">Start tracking your money today</p>
 

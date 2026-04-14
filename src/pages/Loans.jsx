@@ -50,12 +50,12 @@ export default function Loans() {
 
       {/* Summary strip */}
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-4 shadow-card-md">
+        <div className="bg-gradient-to-br from-teal-500 to-teal-600 backdrop-blur-sm rounded-2xl p-4 shadow-card-md border border-teal-400/30">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-teal-100 mb-1">You're Owed</p>
           <p className="text-xl font-bold text-white">{formatCurrencyShort(summary.outstandingLent)}</p>
           <p className="text-[10px] text-teal-200 mt-0.5">outstanding lent</p>
         </div>
-        <div className="bg-gradient-to-br from-red-400 to-red-500 rounded-2xl p-4 shadow-card-md">
+        <div className="bg-gradient-to-br from-red-400 to-red-500 backdrop-blur-sm rounded-2xl p-4 shadow-card-md border border-red-300/30">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-red-100 mb-1">You Owe</p>
           <p className="text-xl font-bold text-white">{formatCurrencyShort(summary.outstandingOwed)}</p>
           <p className="text-[10px] text-red-200 mt-0.5">outstanding borrowed</p>

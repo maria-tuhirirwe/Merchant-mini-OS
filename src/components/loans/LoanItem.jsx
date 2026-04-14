@@ -20,7 +20,7 @@ export default function LoanItem({ loan }) {
   return (
     <div
       onClick={() => navigate(`/loans/${loan.id}`)}
-      className="bg-white rounded-2xl border border-navy-100 shadow-card p-4 cursor-pointer hover:shadow-card-md transition-shadow"
+      className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 shadow-card p-4 cursor-pointer hover:bg-white/80 hover:shadow-card-md transition-all"
     >
       {/* Top row */}
       <div className="flex items-start justify-between gap-3 mb-3">

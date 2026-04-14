@@ -3,22 +3,25 @@ import { formatCurrencyShort } from '../../utils/formatters';
 
 const themes = {
   income: {
-    bg:       'bg-gradient-to-br from-teal-500 to-teal-600',
-    iconBg:   'bg-teal-400/30',
-    text:     'text-white',
-    subtext:  'text-teal-100',
+    bg:      'bg-gradient-to-br from-teal-500/90 to-teal-600/90',
+    border:  'border-teal-400/30',
+    iconBg:  'bg-white/20',
+    text:    'text-white',
+    subtext: 'text-teal-100',
   },
   expense: {
-    bg:       'bg-gradient-to-br from-red-400 to-red-500',
-    iconBg:   'bg-red-300/30',
-    text:     'text-white',
-    subtext:  'text-red-100',
+    bg:      'bg-gradient-to-br from-red-400/90 to-red-500/90',
+    border:  'border-red-300/30',
+    iconBg:  'bg-white/20',
+    text:    'text-white',
+    subtext: 'text-red-100',
   },
   balance: {
-    bg:       'bg-gradient-to-br from-navy-800 to-navy-900',
-    iconBg:   'bg-navy-600/30',
-    text:     'text-white',
-    subtext:  'text-navy-300',
+    bg:      'bg-gradient-to-br from-navy-800/90 to-navy-900/90',
+    border:  'border-navy-600/30',
+    iconBg:  'bg-white/10',
+    text:    'text-white',
+    subtext: 'text-navy-300',
   },
 };
 
@@ -34,8 +37,8 @@ export default function SummaryCard({
 
   return (
     <div className={clsx(
-      'rounded-2xl p-5 flex flex-col gap-3 shadow-card-md',
-      t.bg, className,
+      'rounded-2xl p-5 flex flex-col gap-3 shadow-card-md backdrop-blur-sm border',
+      t.bg, t.border, className,
     )}>
       <div className="flex items-center justify-between">
         <span className={clsx('text-xs font-semibold uppercase tracking-widest', t.subtext)}>

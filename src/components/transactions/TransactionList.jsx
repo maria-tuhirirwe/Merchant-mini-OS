@@ -18,13 +18,14 @@ export default function TransactionList({ transactions = [], onEdit, onDelete, c
   const groups = groupByDate(transactions);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       {Object.entries(groups).map(([label, txns]) => (
         <div key={label}>
-          <p className="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-2 px-1">
+          <p className="text-[11px] font-semibold text-navy-400 uppercase tracking-widest mb-2 px-1">
             {label}
           </p>
-          <div className="flex flex-col gap-2">
+          {/* All items for this date share one card */}
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 shadow-card overflow-hidden divide-y divide-navy-50/60">
             {txns.map(tx => (
               <TransactionItem
                 key={tx.id}

@@ -92,7 +92,7 @@ export default function Dashboard() {
       </div>
 
       {/* Insight banner */}
-      <Card className="!p-3.5 mb-4 bg-teal-50 !border-teal-100">
+      <Card className="!p-3.5 mb-4 bg-teal-500/10 !border-teal-200/60">
         <div className="flex items-start gap-2">
           <span className="text-lg shrink-0">💡</span>
           <p className="text-xs text-teal-800 font-medium leading-relaxed">{insight}</p>
@@ -110,7 +110,7 @@ export default function Dashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
             </svg>
           }
-          className="border-teal-200 text-teal-700 hover:bg-teal-50"
+          className="border-teal-200 text-teal-700 hover:bg-teal-50/60 backdrop-blur-sm"
         >
           Money In
         </Button>
@@ -123,7 +123,7 @@ export default function Dashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M20 12H4" />
             </svg>
           }
-          className="border-red-200 text-red-600 hover:bg-red-50"
+          className="border-red-200 text-red-600 hover:bg-red-50/60 backdrop-blur-sm"
         >
           Money Out
         </Button>
@@ -140,7 +140,6 @@ export default function Dashboard() {
           ? <SpendingChart data={chartData} />
           : <CategoryChart data={catData} />
         }
-        {/* Legend for trend */}
         {chartType === 'trend' && (
           <div className="flex gap-4 mt-2 justify-center">
             <div className="flex items-center gap-1.5 text-xs text-navy-500">
@@ -159,14 +158,12 @@ export default function Dashboard() {
       <div className="mt-5">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-navy-800">Recent Transactions</h2>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => navigate('/history')}
-            className="text-teal-600 hover:bg-teal-50"
+            className="text-xs font-medium text-teal-600 hover:text-teal-700 transition-colors"
           >
-            See all
-          </Button>
+            See all →
+          </button>
         </div>
         <TransactionList
           transactions={recent.slice(0, 6)}

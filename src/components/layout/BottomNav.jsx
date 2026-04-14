@@ -13,22 +13,22 @@ const navItems = [
     ),
   },
   {
-    to: '/add',
-    label: 'Add',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-    ),
-    primary: true,
-  },
-  {
     to: '/history',
     label: 'History',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round"
           d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+    ),
+  },
+  {
+    to: '/add',
+    label: 'Add',
+    primary: true,
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
       </svg>
     ),
   },
@@ -56,8 +56,8 @@ const navItems = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-navy-100 safe-area-bottom lg:hidden">
-      <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-navy-100 safe-area-bottom lg:hidden">
+      <div className="flex items-center justify-around px-1 py-2 max-w-lg mx-auto">
         {navItems.map(item => (
           <NavLink
             key={item.to}
@@ -65,14 +65,14 @@ export default function BottomNav() {
             className={({ isActive }) =>
               item.primary
                 ? clsx(
-                    'flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all duration-150 shadow-card-md',
-                    isActive
-                      ? 'bg-teal-600 text-white scale-105'
-                      : 'bg-teal-500 text-white hover:bg-teal-600',
+                    'flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-600 text-white transition-all duration-150',
+                    isActive ? 'bg-teal-700' : 'hover:bg-teal-700',
                   )
                 : clsx(
-                    'flex flex-col items-center gap-1 px-2 py-1.5 rounded-xl transition-all duration-150',
-                    isActive ? 'text-teal-600' : 'text-navy-400 hover:text-navy-600',
+                    'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-150',
+                    isActive
+                      ? 'text-teal-600'
+                      : 'text-navy-400 hover:text-navy-700',
                   )
             }
           >

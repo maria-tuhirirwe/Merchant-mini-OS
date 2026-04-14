@@ -68,9 +68,9 @@ export default function Sidebar() {
   const { user, logout } = useApp();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-navy-100 min-h-screen fixed left-0 top-0 z-40">
+    <aside className="hidden lg:flex flex-col w-64 bg-white/60 backdrop-blur-xl border-r border-white/60 min-h-screen fixed left-0 top-0 z-40">
       {/* Brand */}
-      <div className="px-6 py-6 border-b border-navy-100">
+      <div className="px-6 py-6 border-b border-white/60">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
             M
@@ -102,8 +102,8 @@ export default function Sidebar() {
       </nav>
 
       {/* User + logout */}
-      <div className="px-3 py-4 border-t border-navy-100">
-        <div className="flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl bg-navy-50">
+      <div className="px-3 py-4 border-t border-white/60">
+        <div className="flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl bg-white/40 backdrop-blur-sm">
           <div className="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
             {user?.name?.charAt(0) || 'U'}
           </div>

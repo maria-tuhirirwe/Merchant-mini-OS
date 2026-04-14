@@ -6,26 +6,26 @@ export default function TransactionItem({ transaction, onEdit, onDelete, compact
   const { categories } = useApp();
   const { type, amount, category, date, note } = transaction;
 
-  const isIncome  = type === 'in';
-  const color     = getCategoryColor(category, categories);
-  const icon      = getCategoryIcon(category, categories);
+  const isIncome = type === 'in';
+  const color    = getCategoryColor(category, categories);
+  const icon     = getCategoryIcon(category, categories);
 
   return (
     <div className={clsx(
-      'bg-white rounded-2xl border border-navy-100 shadow-card flex items-center gap-3',
-      compact ? 'p-3' : 'p-4',
+      'flex items-center gap-3 bg-transparent',
+      compact ? 'px-4 py-3' : 'px-4 py-3.5',
     )}>
       {/* Category icon */}
       <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0"
-        style={{ backgroundColor: `${color}20` }}
+        className="w-9 h-9 rounded-xl flex items-center justify-center text-base shrink-0"
+        style={{ backgroundColor: `${color}18` }}
       >
         {icon}
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-navy-800 truncate">{category}</p>
+        <p className="text-sm font-medium text-navy-800 truncate">{category}</p>
         {note && (
           <p className="text-xs text-navy-400 truncate mt-0.5">{note}</p>
         )}
@@ -35,9 +35,9 @@ export default function TransactionItem({ transaction, onEdit, onDelete, compact
       </div>
 
       {/* Amount + actions */}
-      <div className="flex flex-col items-end gap-1 shrink-0">
+      <div className="flex flex-col items-end gap-0.5 shrink-0">
         <span className={clsx(
-          'text-sm font-bold',
+          'text-sm font-semibold',
           isIncome ? 'text-teal-600' : 'text-red-500',
         )}>
           {isIncome ? '+' : '-'}{formatCurrencyShort(amount)}
