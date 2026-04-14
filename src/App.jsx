@@ -9,6 +9,9 @@ import AddTransaction     from './pages/AddTransaction';
 import TransactionHistory from './pages/TransactionHistory';
 import Categories from './pages/Categories';
 import Profile    from './pages/Profile';
+import Loans      from './pages/Loans';
+import AddLoan    from './pages/AddLoan';
+import LoanDetail from './pages/LoanDetail';
 
 // Guards
 function PrivateRoute({ children }) {
@@ -34,6 +37,9 @@ function AppRoutes() {
       <Route path="/history"    element={<PrivateRoute><TransactionHistory /></PrivateRoute>} />
       <Route path="/categories" element={<PrivateRoute><Categories /></PrivateRoute>} />
       <Route path="/profile"    element={<PrivateRoute><Profile /></PrivateRoute>} />
+      <Route path="/loans"      element={<PrivateRoute><Loans /></PrivateRoute>} />
+      <Route path="/loans/add"  element={<PrivateRoute><AddLoan /></PrivateRoute>} />
+      <Route path="/loans/:id"  element={<PrivateRoute><LoanDetail /></PrivateRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

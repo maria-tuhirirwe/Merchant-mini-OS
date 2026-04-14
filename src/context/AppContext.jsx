@@ -4,6 +4,7 @@ import {
   sampleTransactions,
   defaultCategories,
 } from '../data/sampleData';
+import { sampleLoans, getLoanBalance } from '../data/loansData';
 
 // --- State shape ---
 const initialState = {
@@ -11,25 +12,37 @@ const initialState = {
   isAuthenticated: false,
   transactions: sampleTransactions,
   categories: defaultCategories,
+  loans: sampleLoans,
   loading: false,
   error: null,
 };
 
 // --- Action types ---
 const A = {
-  LOGIN:                'LOGIN',
-  LOGOUT:               'LOGOUT',
-  ADD_TRANSACTION:      'ADD_TRANSACTION',
-  UPDATE_TRANSACTION:   'UPDATE_TRANSACTION',
-  DELETE_TRANSACTION:   'DELETE_TRANSACTION',
-  ADD_CATEGORY:         'ADD_CATEGORY',
-  UPDATE_CATEGORY:      'UPDATE_CATEGORY',
-  DELETE_CATEGORY:      'DELETE_CATEGORY',
-  SET_LOADING:          'SET_LOADING',
-  SET_ERROR:            'SET_ERROR',
-  CLEAR_ERROR:          'CLEAR_ERROR',
-  UPDATE_USER:          'UPDATE_USER',
+  LOGIN:              'LOGIN',
+  LOGOUT:             'LOGOUT',
+  ADD_TRANSACTION:    'ADD_TRANSACTION',
+  UPDATE_TRANSACTION: 'UPDATE_TRANSACTION',
+  DELETE_TRANSACTION: 'DELETE_TRANSACTION',
+  ADD_CATEGORY:       'ADD_CATEGORY',
+  UPDATE_CATEGORY:    'UPDATE_CATEGORY',
+  DELETE_CATEGORY:    'DELETE_CATEGORY',
+  ADD_LOAN:           'ADD_LOAN',
+  UPDATE_LOAN:        'UPDATE_LOAN',
+  DELETE_LOAN:        'DELETE_LOAN',
+  ADD_LOAN_PAYMENT:   'ADD_LOAN_PAYMENT',
+  SET_LOADING:        'SET_LOADING',
+  SET_ERROR:          'SET_ERROR',
+  CLEAR_ERROR:        'CLEAR_ERROR',
+  UPDATE_USER:        'UPDATE_USER',
 };
+
+function computeLoanStatus(loan, payments) {
+  const paid = payments.reduce((s, p) => s + p.amount, 0);
+  if (paid === 0)            return 'pending';
+  if (paid >= loan.amount)   return 'settled';
+  return 'partial';
+}
 
 function reducer(state, action) {
   switch (action.type) {
@@ -67,6 +80,32 @@ function reducer(state, action) {
     case A.DELETE_CATEGORY:
       return { ...state, categories: state.categories.filter(c => c.id !== action.payload) };
 
+    case A.ADD_LOAN:
+      return { ...state, loans: [action.payload, ...state.loans] };
+
+    case A.UPDATE_LOAN:
+      return {
+        ...state,
+        loans: state.loans.map(l =>
+          l.id === action.payload.id ? { ...l, ...action.payload } : l
+        ),
+      };
+
+    case A.DELETE_LOAN:
+      return { ...state, loans: state.loans.filter(l => l.id !== action.payload) };
+
+    case A.ADD_LOAN_PAYMENT: {
+      const { loanId, payment } = action.payload;
+      return {
+        ...state,
+        loans: state.loans.map(l => {
+          if (l.id !== loanId) return l;
+          const payments = [...l.payments, payment];
+          return { ...l, payments, status: computeLoanStatus(l, payments) };
+        }),
+      };
+    }
+
     case A.SET_LOADING:
       return { ...state, loading: action.payload };
 
@@ -89,12 +128,9 @@ const AppContext = createContext(null);
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  // Simulate async login
   const login = useCallback(async (email, password) => {
     dispatch({ type: A.SET_LOADING, payload: true });
     await new Promise(r => setTimeout(r, 900));
-
-    // Demo: any valid-looking email/password works
     if (!email || !password || password.length < 6) {
       dispatch({ type: A.SET_ERROR, payload: 'Invalid email or password.' });
       return false;
@@ -107,7 +143,6 @@ export function AppProvider({ children }) {
   const signup = useCallback(async (name, email, password) => {
     dispatch({ type: A.SET_LOADING, payload: true });
     await new Promise(r => setTimeout(r, 1000));
-
     if (!name || !email || !password || password.length < 6) {
       dispatch({ type: A.SET_ERROR, payload: 'Please fill all fields. Password must be 6+ characters.' });
       return false;
@@ -117,9 +152,7 @@ export function AppProvider({ children }) {
     return true;
   }, []);
 
-  const logout = useCallback(() => {
-    dispatch({ type: A.LOGOUT });
-  }, []);
+  const logout = useCallback(() => dispatch({ type: A.LOGOUT }), []);
 
   const addTransaction = useCallback((transaction) => {
     const newTx = {
@@ -150,21 +183,66 @@ export function AppProvider({ children }) {
     return newCat;
   }, []);
 
-  const updateCategory = useCallback((category) => {
-    dispatch({ type: A.UPDATE_CATEGORY, payload: category });
+  const updateCategory = useCallback((c) => dispatch({ type: A.UPDATE_CATEGORY, payload: c }), []);
+  const deleteCategory = useCallback((id) => dispatch({ type: A.DELETE_CATEGORY, payload: id }), []);
+  const updateUser     = useCallback((u) => dispatch({ type: A.UPDATE_USER, payload: u }), []);
+  const clearError     = useCallback(() => dispatch({ type: A.CLEAR_ERROR }), []);
+
+  // --- Loan actions ---
+  const addLoan = useCallback((loan) => {
+    const newLoan = {
+      ...loan,
+      id: `loan-${Date.now()}`,
+      status: 'pending',
+      payments: [],
+      date: loan.date || new Date().toISOString().split('T')[0],
+    };
+    dispatch({ type: A.ADD_LOAN, payload: newLoan });
+    return newLoan;
   }, []);
 
-  const deleteCategory = useCallback((id) => {
-    dispatch({ type: A.DELETE_CATEGORY, payload: id });
+  const updateLoan = useCallback((loan) => {
+    dispatch({ type: A.UPDATE_LOAN, payload: loan });
   }, []);
 
-  const updateUser = useCallback((updates) => {
-    dispatch({ type: A.UPDATE_USER, payload: updates });
+  const deleteLoan = useCallback((id) => {
+    dispatch({ type: A.DELETE_LOAN, payload: id });
   }, []);
 
-  const clearError = useCallback(() => {
-    dispatch({ type: A.CLEAR_ERROR });
-  }, []);
+  // Record a payment against a loan and auto-create a transaction
+  const addLoanPayment = useCallback((loanId, paymentAmount, paymentDate, note) => {
+    const loan = state.loans.find(l => l.id === loanId);
+    if (!loan) return;
+
+    const payment = {
+      id:     `pay-${Date.now()}`,
+      amount: paymentAmount,
+      date:   paymentDate || new Date().toISOString().split('T')[0],
+      note:   note || '',
+    };
+
+    dispatch({ type: A.ADD_LOAN_PAYMENT, payload: { loanId, payment } });
+
+    // Auto-create transaction
+    // lent  → repayment received → Money In
+    // borrowed → repayment made → Money Out
+    const txType = loan.direction === 'lent' ? 'in' : 'out';
+    const txNote = loan.direction === 'lent'
+      ? `Repayment from ${loan.personName}`
+      : `Repayment to ${loan.personName}`;
+
+    const newTx = {
+      id:       `t-${Date.now()}`,
+      type:     txType,
+      amount:   paymentAmount,
+      category: 'Other',
+      date:     payment.date,
+      note:     note || txNote,
+    };
+    dispatch({ type: A.ADD_TRANSACTION, payload: newTx });
+
+    return payment;
+  }, [state.loans]);
 
   return (
     <AppContext.Provider value={{
@@ -180,6 +258,10 @@ export function AppProvider({ children }) {
       deleteCategory,
       updateUser,
       clearError,
+      addLoan,
+      updateLoan,
+      deleteLoan,
+      addLoanPayment,
     }}>
       {children}
     </AppContext.Provider>
