@@ -12,6 +12,7 @@ import Profile    from './pages/Profile';
 import Loans      from './pages/Loans';
 import AddLoan    from './pages/AddLoan';
 import LoanDetail from './pages/LoanDetail';
+import Insights   from './pages/Insights';
 
 // Guards
 function PrivateRoute({ children }) {
@@ -40,6 +41,7 @@ function AppRoutes() {
       <Route path="/loans"      element={<PrivateRoute><Loans /></PrivateRoute>} />
       <Route path="/loans/add"  element={<PrivateRoute><AddLoan /></PrivateRoute>} />
       <Route path="/loans/:id"  element={<PrivateRoute><LoanDetail /></PrivateRoute>} />
+      <Route path="/insights"   element={<PrivateRoute><Insights /></PrivateRoute>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

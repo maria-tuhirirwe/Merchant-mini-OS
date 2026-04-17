@@ -1,9 +1,9 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { clsx } from '../../utils/clsx';
 
 const navItems = [
   {
-    to: '/dashboard',
+    to:    '/dashboard',
     label: 'Home',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -13,7 +13,7 @@ const navItems = [
     ),
   },
   {
-    to: '/history',
+    to:    '/history',
     label: 'History',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -22,28 +22,20 @@ const navItems = [
       </svg>
     ),
   },
+  // center FAB placeholder — rendered separately below
+  null,
   {
-    to: '/add',
-    label: 'Add',
-    primary: true,
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-    ),
-  },
-  {
-    to: '/loans',
-    label: 'Loans',
+    to:    '/insights',
+    label: 'Insights',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round"
-          d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
       </svg>
     ),
   },
   {
-    to: '/profile',
+    to:    '/profile',
     label: 'Profile',
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
@@ -55,33 +47,45 @@ const navItems = [
 ];
 
 export default function BottomNav() {
+  const navigate = useNavigate();
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-t border-navy-100 safe-area-bottom lg:hidden">
-      <div className="flex items-center justify-around px-1 py-2 max-w-lg mx-auto">
-        {navItems.map(item => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              item.primary
-                ? clsx(
-                    'flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-600 text-white transition-all duration-150',
-                    isActive ? 'bg-teal-700' : 'hover:bg-teal-700',
-                  )
-                : clsx(
-                    'flex flex-col items-center gap-1 px-3 py-2 rounded-xl transition-all duration-150',
-                    isActive
-                      ? 'text-teal-600'
-                      : 'text-navy-400 hover:text-navy-700',
-                  )
-            }
-          >
-            {item.icon}
-            {!item.primary && (
+      <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto relative">
+        {navItems.map((item, idx) => {
+          // Center slot: floating action button
+          if (item === null) {
+            return (
+              <div key="fab" className="flex-1 flex justify-center">
+                <button
+                  onClick={() => navigate('/add')}
+                  className="w-14 h-14 -mt-5 rounded-full bg-teal-600 text-white flex items-center justify-center shadow-lg hover:bg-teal-700 active:scale-95 transition-all duration-150 border-4 border-white"
+                  aria-label="Add transaction"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+            );
+          }
+
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                clsx(
+                  'flex-1 flex flex-col items-center gap-1 py-1.5 rounded-xl transition-all duration-150',
+                  isActive ? 'text-teal-600' : 'text-navy-400 hover:text-navy-700',
+                )
+              }
+            >
+              {item.icon}
               <span className="text-[10px] font-medium leading-none">{item.label}</span>
-            )}
-          </NavLink>
-        ))}
+            </NavLink>
+          );
+        })}
       </div>
     </nav>
   );

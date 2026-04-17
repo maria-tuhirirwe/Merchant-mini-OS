@@ -66,10 +66,10 @@ export function AuthLayout({ children }) {
         {/* Brand mark */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-600/90 backdrop-blur-sm text-white font-bold text-2xl shadow-card-md border border-teal-500/40 mb-3">
-            M
+            S
           </div>
-          <h1 className="text-xl font-bold text-navy-900">Merchant Mini-OS</h1>
-          <p className="text-navy-400 text-sm mt-1">Your pocket financial tracker</p>
+          <h1 className="text-xl font-bold text-navy-900">SenteFlow</h1>
+          <p className="text-navy-400 text-sm mt-1">Your smart money tracker</p>
         </div>
         {children}
       </div>

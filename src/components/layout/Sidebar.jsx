@@ -43,6 +43,16 @@ const navItems = [
     ),
   },
   {
+    to: '/insights',
+    label: 'Insights',
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
+  },
+  {
     to: '/categories',
     label: 'Categories',
     icon: (
@@ -73,11 +83,11 @@ export default function Sidebar() {
       <div className="px-6 py-6 border-b border-white/60">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-            M
+            S
           </div>
           <div>
-            <p className="font-bold text-navy-900 text-sm leading-tight">Merchant</p>
-            <p className="text-xs text-navy-400 leading-tight">Mini-OS</p>
+            <p className="font-bold text-navy-900 text-sm leading-tight">SenteFlow</p>
+            <p className="text-xs text-navy-400 leading-tight">Smart Money Tracker</p>
           </div>
         </div>
       </div>

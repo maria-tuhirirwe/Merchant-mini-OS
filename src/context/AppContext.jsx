@@ -3,18 +3,20 @@ import {
   sampleUser,
   sampleTransactions,
   defaultCategories,
+  computeStreak,
 } from '../data/sampleData';
 import { sampleLoans, getLoanBalance } from '../data/loansData';
 
 // --- State shape ---
 const initialState = {
-  user: sampleUser,
+  user:          sampleUser,
   isAuthenticated: false,
-  transactions: sampleTransactions,
-  categories: defaultCategories,
-  loans: sampleLoans,
-  loading: false,
-  error: null,
+  transactions:  sampleTransactions,
+  categories:    defaultCategories,
+  loans:         sampleLoans,
+  businessMode:  'personal', // 'personal' | 'business'
+  loading:       false,
+  error:         null,
 };
 
 // --- Action types ---
@@ -35,12 +37,13 @@ const A = {
   SET_ERROR:          'SET_ERROR',
   CLEAR_ERROR:        'CLEAR_ERROR',
   UPDATE_USER:        'UPDATE_USER',
+  SET_BUSINESS_MODE:  'SET_BUSINESS_MODE',
 };
 
 function computeLoanStatus(loan, payments) {
   const paid = payments.reduce((s, p) => s + p.amount, 0);
-  if (paid === 0)            return 'pending';
-  if (paid >= loan.amount)   return 'settled';
+  if (paid === 0)          return 'pending';
+  if (paid >= loan.amount) return 'settled';
   return 'partial';
 }
 
@@ -118,6 +121,9 @@ function reducer(state, action) {
     case A.UPDATE_USER:
       return { ...state, user: { ...state.user, ...action.payload } };
 
+    case A.SET_BUSINESS_MODE:
+      return { ...state, businessMode: action.payload };
+
     default:
       return state;
   }
@@ -144,7 +150,7 @@ export function AppProvider({ children }) {
     dispatch({ type: A.SET_LOADING, payload: true });
     await new Promise(r => setTimeout(r, 1000));
     if (!name || !email || !password || password.length < 6) {
-      dispatch({ type: A.SET_ERROR, payload: 'Please fill all fields. Password must be 6+ characters.' });
+      dispatch({ type: A.SET_ERROR, payload: 'Please fill all fields. Password must be 6+ chars.' });
       return false;
     }
     dispatch({ type: A.SET_LOADING, payload: false });
@@ -157,12 +163,13 @@ export function AppProvider({ children }) {
   const addTransaction = useCallback((transaction) => {
     const newTx = {
       ...transaction,
-      id: `t-${Date.now()}`,
+      id:   `t-${Date.now()}`,
       date: transaction.date || new Date().toISOString().split('T')[0],
+      mode: transaction.mode || state.businessMode,
     };
     dispatch({ type: A.ADD_TRANSACTION, payload: newTx });
     return newTx;
-  }, []);
+  }, [state.businessMode]);
 
   const updateTransaction = useCallback((transaction) => {
     dispatch({ type: A.UPDATE_TRANSACTION, payload: transaction });
@@ -175,7 +182,7 @@ export function AppProvider({ children }) {
   const addCategory = useCallback((category) => {
     const newCat = {
       ...category,
-      id: `cat-${Date.now()}`,
+      id:    `cat-${Date.now()}`,
       color: category.color || '#94a3b8',
       icon:  category.icon  || '📝',
     };
@@ -183,19 +190,26 @@ export function AppProvider({ children }) {
     return newCat;
   }, []);
 
-  const updateCategory = useCallback((c) => dispatch({ type: A.UPDATE_CATEGORY, payload: c }), []);
+  const updateCategory = useCallback((c)  => dispatch({ type: A.UPDATE_CATEGORY, payload: c }), []);
   const deleteCategory = useCallback((id) => dispatch({ type: A.DELETE_CATEGORY, payload: id }), []);
-  const updateUser     = useCallback((u) => dispatch({ type: A.UPDATE_USER, payload: u }), []);
-  const clearError     = useCallback(() => dispatch({ type: A.CLEAR_ERROR }), []);
+  const updateUser     = useCallback((u)  => dispatch({ type: A.UPDATE_USER, payload: u }), []);
+  const clearError     = useCallback(()   => dispatch({ type: A.CLEAR_ERROR }), []);
+
+  const setBusinessMode = useCallback((mode) => {
+    dispatch({ type: A.SET_BUSINESS_MODE, payload: mode });
+  }, []);
+
+  // Derived: streak days
+  const streakDays = computeStreak(state.transactions);
 
   // --- Loan actions ---
   const addLoan = useCallback((loan) => {
     const newLoan = {
       ...loan,
-      id: `loan-${Date.now()}`,
-      status: 'pending',
+      id:       `loan-${Date.now()}`,
+      status:   'pending',
       payments: [],
-      date: loan.date || new Date().toISOString().split('T')[0],
+      date:     loan.date || new Date().toISOString().split('T')[0],
     };
     dispatch({ type: A.ADD_LOAN, payload: newLoan });
     return newLoan;
@@ -209,7 +223,6 @@ export function AppProvider({ children }) {
     dispatch({ type: A.DELETE_LOAN, payload: id });
   }, []);
 
-  // Record a payment against a loan and auto-create a transaction
   const addLoanPayment = useCallback((loanId, paymentAmount, paymentDate, note) => {
     const loan = state.loans.find(l => l.id === loanId);
     if (!loan) return;
@@ -223,23 +236,22 @@ export function AppProvider({ children }) {
 
     dispatch({ type: A.ADD_LOAN_PAYMENT, payload: { loanId, payment } });
 
-    // Auto-create transaction
-    // lent  → repayment received → Money In
-    // borrowed → repayment made → Money Out
     const txType = loan.direction === 'lent' ? 'in' : 'out';
     const txNote = loan.direction === 'lent'
       ? `Repayment from ${loan.personName}`
       : `Repayment to ${loan.personName}`;
 
-    const newTx = {
-      id:       `t-${Date.now()}`,
-      type:     txType,
-      amount:   paymentAmount,
-      category: 'Other',
-      date:     payment.date,
-      note:     note || txNote,
-    };
-    dispatch({ type: A.ADD_TRANSACTION, payload: newTx });
+    dispatch({
+      type: A.ADD_TRANSACTION,
+      payload: {
+        id:       `t-${Date.now()}`,
+        type:     txType,
+        amount:   paymentAmount,
+        category: 'Other',
+        date:     payment.date,
+        note:     note || txNote,
+      },
+    });
 
     return payment;
   }, [state.loans]);
@@ -247,6 +259,7 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{
       ...state,
+      streakDays,
       login,
       signup,
       logout,
@@ -258,6 +271,7 @@ export function AppProvider({ children }) {
       deleteCategory,
       updateUser,
       clearError,
+      setBusinessMode,
       addLoan,
       updateLoan,
       deleteLoan,
