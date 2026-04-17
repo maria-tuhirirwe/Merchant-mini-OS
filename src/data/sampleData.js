@@ -1,4 +1,4 @@
-// SenteFlow — sample data for Ugandan users (UGX)
+// Atilia — sample data for Ugandan users (UGX)
 
 export const sampleUser = {
   id:            'user-1',

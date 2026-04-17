@@ -1,4 +1,4 @@
-// SenteFlow Smart Input Parser
+// Atilia Smart Input Parser
 // Converts natural language like "I spent 10k on lunch" into structured data.
 
 const EXPENSE_KEYWORDS = [

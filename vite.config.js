@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
-        name: 'SenteFlow',
-        short_name: 'SenteFlow',
+        name: 'Atilia',
+        short_name: 'Atilia',
         description: 'AI-powered smart money tracker for Ugandan traders, freelancers and mobile money users',
         theme_color: '#0d9488',
         background_color: '#f8fafc',

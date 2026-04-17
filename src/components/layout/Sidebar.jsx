@@ -83,10 +83,10 @@ export default function Sidebar() {
       <div className="px-6 py-6 border-b border-white/60">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-            S
+            A
           </div>
           <div>
-            <p className="font-bold text-navy-900 text-sm leading-tight">SenteFlow</p>
+            <p className="font-bold text-navy-900 text-sm leading-tight">Atilia</p>
             <p className="text-xs text-navy-400 leading-tight">Smart Money Tracker</p>
           </div>
         </div>
