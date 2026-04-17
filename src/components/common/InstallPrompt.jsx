@@ -36,10 +36,10 @@ export default function InstallPrompt() {
     <div className="fixed bottom-20 lg:bottom-6 left-4 right-4 z-50 max-w-sm mx-auto">
       <div className="bg-navy-900 text-white rounded-2xl shadow-xl p-4 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shrink-0">
-          M
+          S
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold">Install Merchant Mini-OS</p>
+          <p className="text-sm font-semibold">Install SenteFlow</p>
           <p className="text-xs text-navy-300 mt-0.5">Add to your home screen for quick access</p>
         </div>
         <div className="flex gap-2 shrink-0">

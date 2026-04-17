@@ -3,14 +3,19 @@
 
 const EXPENSE_KEYWORDS = [
   'spent', 'bought', 'paid', 'cost', 'used', 'gave', 'send', 'sent',
-  'expense', 'withdrew', 'buy', 'purchase', 'purchased', 'spend',
+  'expense', 'withdrew', 'buy', 'purchase', 'purchased', 'spend', 'pay', 'use', 'give', 'send', 'withdraw',
 ];
 const INCOME_KEYWORDS = [
   'received', 'got', 'earned', 'income', 'salary', 'sold', 'collected',
-  'deposited', 'receive', 'get', 'earn', 'sell',
+  'deposited', 'receive', 'get', 'earn', 'sell', 'collect', 'deposit',
+];
+const SAVING_KEYWORDS = [
+  'saved', 'save', 'saving', 'savings', 'set aside', 'put aside',
 ];
 
 const CATEGORY_MAP = {
+  Savings:   ['savings', 'save', 'saved', 'saving', 'set aside', 'put aside',
+              'deposit', 'stash', 'reserve'],
   Food:      ['food', 'lunch', 'dinner', 'breakfast', 'eat', 'eating', 'restaurant',
               'groceries', 'supper', 'posho', 'matooke', 'meat', 'rolex', 'kafunda',
               'snack', 'juice', 'drinks', 'bread', 'rice', 'beans'],
@@ -45,8 +50,11 @@ function parseAmount(text) {
 
 function parseType(text) {
   const lower = text.toLowerCase();
+  const isSaving  = SAVING_KEYWORDS.some(w => lower.includes(w));
   const isExpense = EXPENSE_KEYWORDS.some(w => lower.includes(w));
   const isIncome  = INCOME_KEYWORDS.some(w => lower.includes(w));
+  // Savings takes priority — always treated as money going out
+  if (isSaving)              return 'out';
   if (isExpense && !isIncome) return 'out';
   if (isIncome  && !isExpense) return 'in';
   return null;

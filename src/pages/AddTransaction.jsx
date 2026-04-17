@@ -132,10 +132,62 @@ function ParsedPreview({ parsed }) {
   );
 }
 
+// ─── Speech Recognition hook ─────────────────────────────────────────────────
+function useSpeechRecognition({ onResult, onInterim, onError }) {
+  const recognitionRef = useRef(null);
+  const [isListening, setIsListening] = useState(false);
+  const supported = typeof window !== 'undefined' &&
+    !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+  const start = () => {
+    if (!supported) {
+      onError('Voice input is not supported in this browser. Try Chrome.');
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const rec = new SR();
+    rec.lang             = 'en-UG';
+    rec.interimResults   = true;
+    rec.maxAlternatives  = 1;
+    rec.continuous       = false;
+
+    rec.onstart  = () => setIsListening(true);
+    rec.onend    = () => setIsListening(false);
+    rec.onerror  = (e) => {
+      setIsListening(false);
+      if (e.error === 'not-allowed') onError('Microphone access denied. Please allow it in your browser settings.');
+      else if (e.error === 'no-speech') onError('No speech detected. Please try again.');
+      else onError('Voice input failed. Please type instead.');
+    };
+    rec.onresult = (e) => {
+      let interim = '';
+      let final   = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) final += t;
+        else interim += t;
+      }
+      if (final) onResult(final.trim());
+      else if (interim) onInterim(interim.trim());
+    };
+
+    recognitionRef.current = rec;
+    rec.start();
+  };
+
+  const stop = () => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  };
+
+  return { isListening, supported, start, stop };
+}
+
 // ─── Chat Input Tab ───────────────────────────────────────────────────────────
 function ChatTab({ onSuccess }) {
   const { addTransaction } = useApp();
   const [text,    setText]    = useState('');
+  const [interim, setInterim] = useState('');
   const [parsed,  setParsed]  = useState(null);
   const [error,   setError]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -145,15 +197,22 @@ function ChatTab({ onSuccess }) {
 
   const handleChange = (val) => {
     setText(val);
+    setInterim('');
     setParsed(val.trim() ? parseSmartInput(val) : null);
     setError('');
   };
 
+  const { isListening, supported, start, stop } = useSpeechRecognition({
+    onResult:  (transcript) => handleChange(transcript),
+    onInterim: (transcript) => setInterim(transcript),
+    onError:   (msg) => { setError(msg); setInterim(''); },
+  });
+
   const examplePrompts = [
     'I spent 10k on lunch',
     'Received 50k from client',
+    'Saved 20k this week',
     'Paid 3k boda fare',
-    'Bought airtime 5k',
   ];
 
   const handleSave = async () => {
@@ -174,6 +233,7 @@ function ChatTab({ onSuccess }) {
   };
 
   const confidence = getParseConfidence(parsed);
+  const displayText = isListening && interim ? interim : text;
 
   return (
     <div className="flex flex-col gap-4">
@@ -181,24 +241,70 @@ function ChatTab({ onSuccess }) {
       <div className="relative">
         <textarea
           ref={inputRef}
-          value={text}
+          value={displayText}
           onChange={e => handleChange(e.target.value)}
-          placeholder="e.g. I spent 10k on lunch"
+          placeholder={isListening ? 'Listening…' : 'e.g. I spent 10k on lunch'}
           rows={3}
-          className="w-full rounded-2xl border-2 border-navy-200 bg-white/70 backdrop-blur-sm px-4 py-3.5 text-base text-navy-900 placeholder-navy-300 resize-none focus:outline-none focus:border-teal-400 transition-all leading-relaxed"
+          className={clsx(
+            'w-full rounded-2xl border-2 bg-white/70 backdrop-blur-sm px-4 py-3.5 pr-20 text-base text-navy-900 placeholder-navy-300 resize-none focus:outline-none transition-all leading-relaxed',
+            isListening ? 'border-red-400 placeholder-red-300' : 'border-navy-200 focus:border-teal-400',
+          )}
         />
-        {text && (
-          <button
-            type="button"
-            onClick={() => { setText(''); setParsed(null); setError(''); }}
-            className="absolute top-3 right-3 text-navy-300 hover:text-navy-500 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
+
+        {/* Right-side icon buttons */}
+        <div className="absolute top-3 right-3 flex flex-col gap-1.5 items-center">
+          {/* Mic button */}
+          {supported && (
+            <button
+              type="button"
+              onClick={isListening ? stop : start}
+              className={clsx(
+                'w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200',
+                isListening
+                  ? 'bg-red-500 text-white shadow-md animate-pulse'
+                  : 'bg-navy-100 text-navy-500 hover:bg-teal-100 hover:text-teal-600',
+              )}
+              title={isListening ? 'Stop recording' : 'Speak your transaction'}
+            >
+              {isListening ? (
+                /* Stop icon when recording */
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
+                </svg>
+              ) : (
+                /* Mic icon */
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8" />
+                </svg>
+              )}
+            </button>
+          )}
+
+          {/* Clear button */}
+          {text && !isListening && (
+            <button
+              type="button"
+              onClick={() => { setText(''); setParsed(null); setError(''); setInterim(''); }}
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-navy-300 hover:text-navy-500 hover:bg-navy-100 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Recording indicator */}
+      {isListening && (
+        <div className="flex items-center gap-2 px-1">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <p className="text-xs text-red-600 font-medium">Recording… speak your transaction</p>
+        </div>
+      )}
 
       {/* Parsed preview */}
       <ParsedPreview parsed={parsed} />
@@ -228,7 +334,7 @@ function ChatTab({ onSuccess }) {
       </button>
 
       {/* Example prompts */}
-      {!text && (
+      {!text && !isListening && (
         <div>
           <p className="text-[11px] text-navy-400 font-medium mb-2 px-1">Try saying:</p>
           <div className="flex flex-col gap-1.5">

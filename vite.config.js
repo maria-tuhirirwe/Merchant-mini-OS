@@ -9,9 +9,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
-        name: 'Merchant Mini-OS',
-        short_name: 'Mini-OS',
-        description: 'Lightweight financial tracking for merchants and everyday users',
+        name: 'SenteFlow',
+        short_name: 'SenteFlow',
+        description: 'AI-powered smart money tracker for Ugandan traders, freelancers and mobile money users',
         theme_color: '#0d9488',
         background_color: '#f8fafc',
         display: 'standalone',
